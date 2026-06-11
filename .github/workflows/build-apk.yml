@@ -1,7 +1,5 @@
 name: Build Android APK
-
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,15 +13,20 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
-      # Bước cực kỳ quan trọng: Cấp quyền chạy cho file đóng gói (tránh lỗi Permission Denied khi giải nén từ file ZIP)
-      - name: Grant Execute Permission for Gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.1.1
+
+      - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: Maps-BLE-Bridge-Debug
           path: app/build/outputs/apk/debug/app-debug.apk
